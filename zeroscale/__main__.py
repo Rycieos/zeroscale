@@ -1,3 +1,5 @@
+import logging
+import sys
 from zeroscale.zeroscale import ZeroScale
 from zeroscale.plugins.minecraft import Minecraft
 

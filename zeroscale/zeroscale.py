@@ -55,8 +55,8 @@ class ZeroScale:
             remote_reader, remote_writer = await asyncio.wait_for(
                     asyncio.open_connection(port=self.server_port), timeout=20)
             await asyncio.gather(
-                ProxyServer.pipe(client_reader, remote_writer),
-                ProxyServer.pipe(remote_reader, client_writer)
+                ZeroScale.pipe(client_reader, remote_writer),
+                ZeroScale.pipe(remote_reader, client_writer)
             )
         finally:
             client_writer.close()
@@ -67,6 +67,9 @@ class ZeroScale:
                 self.schedule_stop()
 
     def schedule_stop(self):
+        if self.server.status is not Status.running:
+            return
+
         self.cancel_stop()
         logging.debug('Scheduling %s server stop', type(self.server).__name__)
         self.kill_task = asyncio.ensure_future(self.delay_stop())

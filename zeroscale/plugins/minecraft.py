@@ -17,14 +17,14 @@ class Minecraft():
             self.server_command = [
                 'java',
                 '-jar',
-                self.jar_name,
+                jar_name,
                 'nogui'
             ]
         else:
             self.server_command = server_command
 
         self.status = Status.stopped
-        self.startup_task = None
+        self.fake_status_bytes = Minecraft._compile_fake_status_bytes()
 
     async def start(self):
         if self.status is not Status.stopped:
@@ -38,7 +38,7 @@ class Minecraft():
             stdout=asyncio.subprocess.PIPE
         )
 
-        self.startup_task = asyncio.ensure_future(self.await_server_ready())
+        await self.await_server_ready()
 
     async def await_server_ready(self):
         while not self.proc.stdout.at_eof():
@@ -62,6 +62,10 @@ class Minecraft():
         self.status = Status.stopped
 
     def fake_status(self) -> bytes:
+        return self.fake_status_bytes
+
+    @staticmethod
+    def _compile_fake_status_bytes() -> bytes:
         json_data = json.dumps({
             "description": {"text": "Server starting up..."},
             "players": {"max": 0, "online": 0},
