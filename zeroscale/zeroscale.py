@@ -6,14 +6,10 @@ import time
 from zeroscale.status import Status
 from zeroscale.plugins.minecraft import Minecraft
 
-logging.basicConfig(level=logging.DEBUG)
-
-encoding = 'utf-8'
-
-class ProxyServer:
+class ZeroScale:
     def __init__(self, server,
-            listen_port: int = 25565,
-            server_port: int = 25575,
+            listen_port: int,
+            server_port: int,
             server_idle_shutdown: int = 15):
         self.server = server
         self.listen_port = listen_port
@@ -28,12 +24,12 @@ class ProxyServer:
         if self.server.status is Status.running:
             await self.proxy(client_reader, client_writer)
         else:
-            self.send_server_status(client_reader, client_writer)
+            await self.send_server_status(client_reader, client_writer)
             await self.server.start()
             # In case no one connects after starting
             self.schedule_stop()
 
-    def send_server_status(self, client_reader, client_writer):
+    async def send_server_status(self, client_reader, client_writer):
         logging.debug('Sending fake response')
 
         try:
@@ -104,6 +100,3 @@ class ProxyServer:
         server.close()
         loop.run_until_complete(server.wait_closed())
         loop.close()
-
-if __name__ == "__main__":
-    ProxyServer(listen_port=8080, server_port=25566, server=Minecraft('1.11')).start_server()

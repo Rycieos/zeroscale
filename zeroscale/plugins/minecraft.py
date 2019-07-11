@@ -9,14 +9,15 @@ encoding = 'utf-8'
 ready_pattern = re.compile('.*\\[Server thread/INFO\\]: Done \\([0-9.]*s\\).*', re.IGNORECASE)
 
 class Minecraft():
-    def __init__(self, version: str, server_command: List[str] = None):
-        self.version = version
+    def __init__(self,
+            jar_name: str = "minecraft_server.jar",
+            server_command: List[str] = None):
 
         if server_command is None:
             self.server_command = [
                 'java',
                 '-jar',
-                'minecraft_server.{}.jar'.format(version),
+                self.jar_name,
                 'nogui'
             ]
         else:
@@ -61,8 +62,19 @@ class Minecraft():
         self.status = Status.stopped
 
     def fake_status(self) -> bytes:
-        return json.dumps({
-            "description": {"text": "Server is starting up"},
+        json_data = json.dumps({
+            "description": {"text": "Server starting up..."},
             "players": {"max": 0, "online": 0},
-            "version": {"name": self.version}
-        }).encode(encoding)
+            "version": {"name": "loading", "protocol": 0}
+        }, separators=(',', ':')).encode(encoding)
+
+        data = bytearray()
+        # Total packet length
+        data.extend((len(json_data) + 2).to_bytes(1, byteorder='big'))
+        # Ping enum
+        data.extend(b'\x00')
+        # Payload length
+        data.extend(len(json_data).to_bytes(1, byteorder='big'))
+        data.extend(json_data)
+
+        return data
