@@ -3,14 +3,17 @@ import json
 import logging
 import re
 from typing import List
+
 from zeroscale.status import Status
 
 encoding = 'utf-8'
 ready_pattern = re.compile('.*\\[Server thread/INFO\\]: Done \\([0-9.]*s\\).*', re.IGNORECASE)
 
-class Minecraft():
+logger = logging.getLogger(__name__)
+
+class Server():
     def __init__(self,
-            jar_name: str = "minecraft_server.jar",
+            jar_name: str = "server.jar",
             server_command: List[str] = None):
 
         if server_command is None:
@@ -24,14 +27,15 @@ class Minecraft():
             self.server_command = server_command
 
         self.status = Status.stopped
-        self.fake_status_bytes = Minecraft._compile_fake_status_bytes()
+        self.fake_status_bytes = self._compile_fake_status_bytes()
 
     async def start(self):
         if self.status is not Status.stopped:
             return
 
-        logging.info('Starting Minecraft server')
+        logger.info('Starting Minecraft server')
         self.status = Status.starting
+
         self.proc = await asyncio.create_subprocess_exec(
             *self.server_command,
             stdin=asyncio.subprocess.PIPE,
@@ -44,7 +48,7 @@ class Minecraft():
         while not self.proc.stdout.at_eof():
             line = await self.proc.stdout.readline()
             if ready_pattern.match(line.decode(encoding)):
-                logging.info('Minecraft server online')
+                logger.info('Minecraft server online')
                 self.status = Status.running
                 return
 
@@ -52,13 +56,13 @@ class Minecraft():
         if self.status is not Status.running:
             return
 
-        logging.info('Stopping Minecraft server')
+        logger.info('Stopping Minecraft server')
         self.status = Status.stopping
         self.proc.stdin.write('/stop\n'.encode(encoding))
 
         # Wait for shutdown
         await self.proc.communicate()
-        logging.info('Minecraft server offline')
+        logger.info('Minecraft server offline')
         self.status = Status.stopped
 
     def fake_status(self) -> bytes:
@@ -74,6 +78,7 @@ class Minecraft():
 
         data = bytearray()
         # Total packet length
+        # Seems to not work if above 0x80
         data.extend((len(json_data) + 2).to_bytes(1, byteorder='big'))
         # Ping enum
         data.extend(b'\x00')
