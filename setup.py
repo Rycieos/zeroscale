@@ -5,7 +5,7 @@ with open("README.md", 'r') as fh:
 
 setup(
     name="zeroscale",
-    version="0.1.0",
+    version="0.1.1",
     author="Mark Vander Stel",
     author_email="mvndrstl@gmail.com",
     description="Scale-to-zero any server",
