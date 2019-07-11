@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 class Server():
     def __init__(self,
             jar_name: str = "server.jar",
-            server_command: List[str] = None):
+            server_command: List[str] = None,
+            working_directory: str = None):
 
         if server_command is None:
             self.server_command = [
@@ -25,6 +26,8 @@ class Server():
             ]
         else:
             self.server_command = server_command
+
+        self.working_directory = working_directory
 
         self.status = Status.stopped
         self.fake_status_bytes = self._compile_fake_status_bytes()
@@ -39,7 +42,8 @@ class Server():
         self.proc = await asyncio.create_subprocess_exec(
             *self.server_command,
             stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE
+            stdout=asyncio.subprocess.PIPE,
+            cwd=self.working_directory
         )
 
         await self.await_server_ready()

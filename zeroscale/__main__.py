@@ -17,6 +17,8 @@ def main():
             help="Port that the real server will be listening on.")
     parser.add_argument('--idle_shutdown', '-t', type=int, default=15,
             help="Time in seconds after last client disconects to kill the server.")
+    parser.add_argument('--working_directory', '-w', type=str,
+            help="Directory to start the server process.")
     parser.add_argument('--plugin_argument', '-a', type=str, action='append', default=[],
             help="Arguments to pass to the Server() constructor in the plugin. Can be called multiple times.")
     parser.add_argument('--info', '-i', action='store_const',
@@ -37,7 +39,10 @@ def main():
         return
 
     ZeroScale(
-        server=plugin.Server(*args.plugin_argument),
+        server=plugin.Server(
+            *args.plugin_argument,
+            working_directory=args.working_directory
+        ),
         listen_port=args.listen_port,
         server_port=args.server_port,
         server_idle_shutdown=args.idle_shutdown
