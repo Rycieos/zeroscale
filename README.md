@@ -33,7 +33,7 @@ optional arguments:
   --info, -i            Enable info logging.
   --debug, -d           Enable debug logging. Default is WARNING
 ```
-  
+
 ## Example
 ```
 $ zeroscale minecraft 25565 25575 --debug
@@ -90,7 +90,7 @@ class Server():
 
         logger.info('Stopping server')
         self.status = Status.stopping
-        
+
         # Whatever to stop the server
 
         logger.info('Server offline')
@@ -99,3 +99,6 @@ class Server():
     def fake_status(self) -> bytes:
         return # Some bytes for when a client tries to connect and the server is not online
 ```
+
+## Systemd
+Example systemd configs are located in systemd/ to accompany the plugins.
