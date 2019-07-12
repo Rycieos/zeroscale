@@ -1,4 +1,13 @@
 # zeroscale
+
+[![Build Status](https://travis-ci.org/Rycieos/zeroscale.svg?branch=master)](https://travis-ci.org/Rycieos/zeroscale)
+[![Coverage Status](https://coveralls.io/repos/github/Rycieos/zeroscale/badge.svg?branch=master)](https://coveralls.io/github/Rycieos/zeroscale?branch=master)
+[![Requirements Status](https://requires.io/github/Rycieos/zeroscale/requirements.svg?branch=master)](https://requires.io/github/Rycieos/zeroscale/requirements/?branch=master)
+
+[![PyPI Package latest release](https://img.shields.io/pypi/v/zeroscale.svg)](https://pypi.python.org/pypi/zeroscale)
+[![PyPI Wheel](https://img.shields.io/pypi/wheel/zeroscale.svg)](https://pypi.python.org/pypi/zeroscale)
+[![Supported versions](https://img.shields.io/pypi/pyversions/zeroscale.svg)](https://pypi.python.org/pypi/zeroscale)
+
 Scale-to-zero any server
 
 Some servers don't idle well. Either they constantly compute things (like Minecraft keeping spawn chunks always loaded), or they do things you don't want them to. `zeroscale` sits in front of a server and only spins it up when someone tries to connect to it, proxying the connection.
