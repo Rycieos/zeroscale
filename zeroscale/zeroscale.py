@@ -82,7 +82,7 @@ class ZeroScale:
         try:
             loop.run_forever()
         except KeyboardInterrupt:
-            pass
+            self.server.stop()
 
         # Close the server
         server.close()

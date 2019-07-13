@@ -57,7 +57,8 @@ class Server():
                 return
 
     async def stop(self):
-        if self.status is not Status.running:
+        # Stop if running or still starting up
+        if self.status in (Status.stopped, Status.stopping):
             return
 
         logger.info('Stopping Minecraft server')
