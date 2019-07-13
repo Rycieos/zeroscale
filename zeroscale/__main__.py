@@ -16,7 +16,9 @@ def main():
     parser.add_argument('server_port', type=int,
             help="Port that the real server will be listening on.")
     parser.add_argument('--idle_shutdown', '-t', type=int, default=15,
-            help="Time in seconds after last client disconects to kill the server.")
+            help="Time in seconds after last client disconects to shutdown the server. Default 15.")
+    parser.add_argument('--shutdown_timeout', '-s', type=int, default=15,
+            help="Time in seconds after proxy server gets SIGINT to kill the server. Default 15.")
     parser.add_argument('--working_directory', '-w', type=str,
             help="Directory to start the server process.")
     parser.add_argument('--plugin_argument', '-a', type=str, action='append', default=[],
@@ -45,7 +47,8 @@ def main():
         ),
         listen_port=args.listen_port,
         server_port=args.server_port,
-        server_idle_shutdown=args.idle_shutdown
+        server_idle_shutdown=args.idle_shutdown,
+        server_shutdown_timeout=args.shutdown_timeout
     ).start_server()
 
 if __name__ == "__main__":

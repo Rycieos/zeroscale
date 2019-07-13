@@ -11,11 +11,13 @@ class ZeroScale:
     def __init__(self, server,
             listen_port: int,
             server_port: int,
-            server_idle_shutdown: int = 15):
+            server_idle_shutdown: int = 15,
+            server_shutdown_timeout: int = 15):
         self.server = server
         self.listen_port = listen_port
         self.server_port = server_port
         self.server_idle_shutdown = server_idle_shutdown
+        self.server_shutdown_timeout = server_shutdown_timeout
 
         self.live_connections = 0
         self.kill_task = None
@@ -83,7 +85,8 @@ class ZeroScale:
             loop.run_forever()
         except KeyboardInterrupt:
             self.cancel_stop()
-            loop.run_until_complete(asyncio.wait_for(self.server.stop(), timeout=20))
+            loop.run_until_complete(asyncio.wait_for(self.server.stop(),
+                timeout=self.server_shutdown_timeout))
 
         # Close the server
         proxy_server.close()
