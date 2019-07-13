@@ -73,18 +73,19 @@ class ZeroScale:
     def start_server(self):
         loop = asyncio.get_event_loop()
         coro = asyncio.start_server(self.handle_client, port=self.listen_port)
-        server = loop.run_until_complete(coro)
+        proxy_server = loop.run_until_complete(coro)
 
-        for socket in server.sockets:
+        for socket in proxy_server.sockets:
             logger.debug('Listening on %s', socket.getsockname())
 
         # Serve requests until Ctrl+C is pressed
         try:
             loop.run_forever()
         except KeyboardInterrupt:
-            self.server.stop()
+            self.cancel_stop()
+            loop.run_until_complete(asyncio.wait_for(self.server.stop(), timeout=20))
 
         # Close the server
-        server.close()
-        loop.run_until_complete(server.wait_closed())
+        proxy_server.close()
+        loop.run_until_complete(proxy_server.wait_closed())
         loop.close()

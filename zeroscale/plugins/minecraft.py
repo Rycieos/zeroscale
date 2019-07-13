@@ -31,6 +31,7 @@ class Server():
 
         self.status = Status.stopped
         self.fake_status_bytes = self._compile_fake_status_bytes()
+        self.startup_task = None
 
     async def start(self):
         if self.status is not Status.stopped:
@@ -46,7 +47,8 @@ class Server():
             cwd=self.working_directory
         )
 
-        await self.await_server_ready()
+        self.startup_task = asyncio.ensure_future(self.await_server_ready())
+        await self.startup_task
 
     async def await_server_ready(self):
         while not self.proc.stdout.at_eof():
@@ -58,7 +60,12 @@ class Server():
 
     async def stop(self):
         # Stop if running or still starting up
-        if self.status in (Status.stopped, Status.stopping):
+        if self.status is Status.starting:
+            # If we communicate() with the server before it is running,
+            # The readline() from the start watcher will conflict
+            # Do we need to check if the cancel is done?
+            self.startup_task.cancel()
+        elif self.status is not Status.running:
             return
 
         logger.info('Stopping Minecraft server')
@@ -66,6 +73,10 @@ class Server():
         self.proc.stdin.write('/stop\n'.encode(encoding))
 
         # Wait for shutdown
+        # This needs to be communicate() and not wait() to avoid
+        # blocking on filled stdout pipe
+        # If the server runs long enough, can it actually fill the pipe
+        # enough to block?
         await self.proc.communicate()
         logger.info('Minecraft server offline')
         self.status = Status.stopped
