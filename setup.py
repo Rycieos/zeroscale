@@ -2,7 +2,7 @@
 
 from setuptools import find_packages, setup
 
-with open("README.md", 'r') as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 test_deps = [
@@ -24,9 +24,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     tests_require=test_deps,
-    extras_require={'test': test_deps},
+    extras_require={"test": test_deps},
     zip_safe=False,
-    python_requires='>=3.5',
+    python_requires=">=3.5",
     entry_points={
         "console_scripts": [
             "zeroscale = zeroscale.__main__:main"
@@ -37,8 +37,8 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
 )
