@@ -2,7 +2,6 @@ import asyncio
 import json
 import logging
 import re
-from typing import List
 
 from zeroscale.status import Status
 
@@ -12,20 +11,18 @@ ready_pattern = re.compile('.*\\[Server thread/INFO\\]: Done \\([0-9.]*s\\).*', 
 logger = logging.getLogger(__name__)
 
 class Server():
-    def __init__(self,
-            jar_name: str = "server.jar",
-            server_command: List[str] = None,
+    def __init__(self, *server_args,
             working_directory: str = None):
 
-        if server_command is None:
-            self.server_command = [
+        if not server_args:
+            self.server_command = (
                 'java',
                 '-jar',
-                jar_name,
+                'server.jar',
                 'nogui'
-            ]
+            )
         else:
-            self.server_command = server_command
+            self.server_command = server_args
 
         self.working_directory = working_directory
 

@@ -6,14 +6,15 @@ with open("README.md", 'r') as fh:
     long_description = fh.read()
 
 test_deps = [
-    'coveralls',
-    'pytest',
-    'pytest-cov',
+    "coveralls>=1.4.0",
+    "pytest>=5.0.0",
+    "pytest-asyncio>=0.10.0",
+    "pytest-cov>=2.6.1",
 ]
 
 setup(
     name="zeroscale",
-    version="0.1.1",
+    version="0.2.0",
     author="Mark Vander Stel",
     author_email="mvndrstl@gmail.com",
     description="Scale-to-zero any server",
