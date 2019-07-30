@@ -1,11 +1,11 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class Status(Enum):
-    stopped = auto()
-    starting = auto()
-    running = auto()
-    stopping = auto()
+    stopped = 1
+    starting = 2
+    running = 3
+    stopping = 4
 
     # Hide unimportant value
     def __repr__(self):
