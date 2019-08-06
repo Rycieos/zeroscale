@@ -16,8 +16,9 @@ class Server:
         self.working_directory = working_directory
         self.name = server_args[0]
 
-        self.stop_signal = Signals.SIGINT
+        self.proc = None
         self.status = Status.stopped
+        self.stop_signal = Signals.SIGINT
 
     def set_stop_signal(self, signal: Signals):
         self.stop_signal = signal

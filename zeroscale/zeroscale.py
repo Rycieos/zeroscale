@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import time
 
 from zeroscale.proxy import proxy
 from zeroscale.status import Status
@@ -9,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class ZeroScale:
+    """ZeroScale proxy server that spins up a server when a client connects"""
+
     def __init__(
         self,
         server,
@@ -27,6 +28,8 @@ class ZeroScale:
         self.kill_task = None
 
     async def handle_client(self, client_reader, client_writer):
+        """Handle an incoming client connection, either by proxying or sending a status"""
+
         logger.debug("New connection, server is %s", self.server.status.name)
 
         if self.server.status is Status.running:
@@ -42,12 +45,14 @@ class ZeroScale:
             if self.live_connections <= 0:
                 self.schedule_stop()
         else:
-            await self.send_server_status(client_reader, client_writer)
+            await self.send_server_status(client_writer)
             await self.server.start()
             # In case no one connects after starting
             self.schedule_stop()
 
-    async def send_server_status(self, client_reader, client_writer):
+    async def send_server_status(self, client_writer):
+        """Send a data packet to a client that the server is starting up"""
+
         logger.debug("Sending fake response")
 
         try:
@@ -56,6 +61,8 @@ class ZeroScale:
             client_writer.close()
 
     def schedule_stop(self):
+        """Schedule a run of the delay_stop() call"""
+
         if self.server.status is not Status.running:
             return
 
@@ -64,17 +71,23 @@ class ZeroScale:
         self.kill_task = asyncio.ensure_future(self.delay_stop())
 
     def cancel_stop(self):
+        """Kill the scheduled run of delay_stop() before it actually stops"""
+
         if self.kill_task and not self.kill_task.cancelled():
             logger.debug("Canceling %s server stop", type(self.server).__name__)
             self.kill_task.cancel()
 
     async def delay_stop(self):
+        """Stop the plugin server, but wait first"""
+
         await asyncio.sleep(self.server_idle_shutdown)
 
         logger.debug("No clients online for %i seconds", self.server_idle_shutdown)
         await self.server.stop()
 
     def start_server(self):
+        """Start the proxy server"""
+
         loop = asyncio.get_event_loop()
         coro = asyncio.start_server(self.handle_client, port=self.listen_port)
         proxy_server = loop.run_until_complete(coro)

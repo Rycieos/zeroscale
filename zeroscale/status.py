@@ -1,7 +1,10 @@
+"""Helper for mapping statuses of services"""
 from enum import Enum
 
 
 class Status(Enum):
+    """Status options for server"""
+
     stopped = 1
     starting = 2
     running = 3

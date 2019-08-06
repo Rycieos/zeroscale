@@ -5,8 +5,8 @@ import re
 
 from zeroscale.status import Status
 
-encoding = "utf-8"
-ready_pattern = re.compile(
+ENCODING = "utf-8"
+READY_PATTERN = re.compile(
     ".*\\[Server thread/INFO\\]: Done \\([0-9.]*s\\).*", re.IGNORECASE
 )
 
@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class Server:
+    """Minecraft server wrapper"""
     def __init__(self, *server_args, working_directory: str = None):
 
         if not server_args:
@@ -23,11 +24,14 @@ class Server:
 
         self.working_directory = working_directory
 
-        self.status = Status.stopped
         self.fake_status_bytes = self._compile_fake_status_bytes()
+        self.proc = None
         self.startup_task = None
+        self.status = Status.stopped
 
     async def start(self):
+        """Start the Minecraft server"""
+
         if self.status is not Status.stopped:
             return
 
@@ -45,14 +49,18 @@ class Server:
         await self.startup_task
 
     async def await_server_ready(self):
+        """Wait for the Minecraft server to be ready to accept connections"""
+
         while not self.proc.stdout.at_eof():
             line = await self.proc.stdout.readline()
-            if ready_pattern.match(line.decode(encoding)):
+            if READY_PATTERN.match(line.decode(ENCODING)):
                 logger.info("Minecraft server online")
                 self.status = Status.running
                 return
 
     async def stop(self):
+        """Stop the Minecraft server"""
+
         # Stop if running or still starting up
         if self.status is Status.starting:
             # If we communicate() with the server before it is running,
@@ -64,7 +72,7 @@ class Server:
 
         logger.info("Stopping Minecraft server")
         self.status = Status.stopping
-        self.proc.stdin.write("/stop\n".encode(encoding))
+        self.proc.stdin.write("/stop\n".encode(ENCODING))
 
         # Wait for shutdown
         # This needs to be communicate() and not wait() to avoid
@@ -76,10 +84,14 @@ class Server:
         self.status = Status.stopped
 
     def fake_status(self) -> bytes:
+        """Return the JSON data with the starting up message"""
+
         return self.fake_status_bytes
 
     @staticmethod
     def _compile_fake_status_bytes() -> bytes:
+        """Build the JSON data to send to a client to show it's starting up"""
+
         json_data = json.dumps(
             {
                 "description": {"text": "Server starting up..."},
@@ -87,7 +99,7 @@ class Server:
                 "version": {"name": "loading", "protocol": 0},
             },
             separators=(",", ":"),
-        ).encode(encoding)
+        ).encode(ENCODING)
 
         data = bytearray()
         # Total packet length

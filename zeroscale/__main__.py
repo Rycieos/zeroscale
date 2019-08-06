@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 def main(*argv):
+    """Load arguments and start a Zeroscale proxy server"""
+
     parser = argparse.ArgumentParser(description="Scale a server to zero.")
 
     parser.add_argument(
