@@ -14,7 +14,7 @@ test_deps = [
 
 setup(
     name="zeroscale",
-    version="0.2.0",
+    version="0.3.0",
     author="Mark Vander Stel",
     author_email="mvndrstl@gmail.com",
     description="Scale-to-zero any server",
