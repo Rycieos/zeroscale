@@ -38,7 +38,10 @@ class ZeroScale:
             if self.live_connections > 0:
                 self.cancel_stop()
 
-            await proxy(client_reader, client_writer, self.server_port)
+            try:
+                await proxy(client_reader, client_writer, self.server_port)
+            except (asyncio.TimeoutError, TimeoutError):
+                logger.exception("Proxy connection error")
 
             self.live_connections -= 1
             logger.debug("Lost connection, total clients: %i", self.live_connections)

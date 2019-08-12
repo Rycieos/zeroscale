@@ -5,6 +5,7 @@ async def pipe(reader, writer):
     try:
         while not reader.at_eof():
             writer.write(await reader.read(2048))
+            await writer.drain()
     finally:
         writer.close()
 
