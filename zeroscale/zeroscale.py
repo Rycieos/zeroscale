@@ -40,7 +40,7 @@ class ZeroScale:
 
             try:
                 await proxy(client_reader, client_writer, self.server_port)
-            except (asyncio.TimeoutError, TimeoutError):
+            except (ConnectionError, TimeoutError, asyncio.TimeoutError):
                 logger.exception("Proxy connection error")
 
             self.live_connections -= 1
