@@ -39,6 +39,11 @@ optional arguments:
   --plugin_argument PLUGIN_ARGUMENT, -a PLUGIN_ARGUMENT
                         Arguments to pass to the Server() constructor in the
                         plugin. Can be called multiple times.
+  --ignore_bad_clients, -b
+                        Disable checking for a bad client connection. This
+                        would prevent port scanners from starting servers, but
+                        if your real clients are failing the check, you can
+                        disable it.
   --info, -i            Enable info logging.
   --debug, -d           Enable debug logging. Default is WARNING
 ```
@@ -48,6 +53,9 @@ optional arguments:
 $ zeroscale minecraft 25565 25575 --debug
 DEBUG:zeroscale.zeroscale:Listening on ('::', 25565, 0, 0)
 DEBUG:zeroscale.zeroscale:Listening on ('0.0.0.0', 25565)
+...
+DEBUG:zeroscale.zeroscale:New connection, server is stopped
+DEBUG:zeroscale.zeroscale:Invalid client attempted connection  # Detects invalid client
 ...
 DEBUG:zeroscale.zeroscale:New connection, server is stopped
 DEBUG:zeroscale.zeroscale:Sending fake response  # Actually shows valid message in client!
@@ -104,6 +112,9 @@ class Server():
 
         logger.info('Server offline')
         self.status = Status.stopped
+
+    async def is_valid_connection(self, client_reader):
+        return # If the connection is from a valid client (to stop port scanners)
 
     def fake_status(self) -> bytes:
         return # Some bytes for when a client tries to connect and the server is not online

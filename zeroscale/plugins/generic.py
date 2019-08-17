@@ -50,5 +50,8 @@ class Server:
         logger.info("%s server offline", self.name)
         self.status = Status.stopped
 
+    async def is_valid_connection(self, client_reader):
+        return True
+
     def fake_status(self) -> bytes:
         return b"Server starting up..."

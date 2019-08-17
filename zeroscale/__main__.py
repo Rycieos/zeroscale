@@ -63,6 +63,12 @@ def main(*argv):
         help="Arguments to pass to the Server() constructor in the plugin. Can be called multiple times.",
     )
     parser.add_argument(
+        "--ignore_bad_clients",
+        "-b",
+        action="store_true",
+        help="Disable checking for a bad client connection. This would prevent port scanners from starting servers, but if your real clients are failing the check, you can disable it.",
+    )
+    parser.add_argument(
         "--info",
         "-i",
         action="store_const",
@@ -114,6 +120,7 @@ def main(*argv):
         server_port=args.server_port,
         server_idle_shutdown=args.idle_shutdown,
         server_shutdown_timeout=args.shutdown_timeout,
+        ignore_bad_clients=args.ignore_bad_clients
     ).start_server()
 
 

@@ -5,8 +5,11 @@ import re
 from zeroscale.status import Status
 
 ENCODING = "utf-8"
+CONNECT_PATTERN = re.compile(
+    "Terraria", re.IGNORECASE
+)
 READY_PATTERN = re.compile(
-    "^Server started$", re.IGNORECASE
+    "Server started", re.IGNORECASE
 )
 
 logger = logging.getLogger(__name__)
@@ -81,6 +84,28 @@ class Server:
         await self.proc.communicate()
         logger.info("Terraria server offline")
         self.status = Status.stopped
+
+    async def is_valid_connection(self, client_reader):
+        """Check the packet to see if the client is valid
+            See https://seancode.com/terrafirma/net.html"""
+
+        payload = bytes()
+        try:
+            num_bytes = await asyncio.wait_for(client_reader.read(2), timeout=5)
+
+            # Number of bytes includes the byte count itself
+            num_bytes = int.from_bytes(num_bytes, byteorder="little") - 2
+
+            payload = await asyncio.wait_for(client_reader.read(num_bytes), timeout=5)
+        except asyncio.TimeoutError:
+            return False
+
+        # Check if packet type is connect request
+        if payload[0] != 0x01:
+            return False
+
+        # The word "Terraria" should be in the payload
+        return bool(CONNECT_PATTERN.search(payload.decode(ENCODING, errors="ignore")))
 
     def fake_status(self) -> bytes:
         """Return the byte data with the starting up message"""

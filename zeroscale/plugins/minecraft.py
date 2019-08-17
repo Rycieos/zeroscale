@@ -7,7 +7,7 @@ from zeroscale.status import Status
 
 ENCODING = "utf-8"
 READY_PATTERN = re.compile(
-    ".*\\[Server thread/INFO\\]: Done \\([0-9.]*s\\).*", re.IGNORECASE
+    "\\[Server thread/INFO\\]: Done \\([0-9.]*s\\)", re.IGNORECASE
 )
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ class Server:
 
         while not self.proc.stdout.at_eof():
             line = await self.proc.stdout.readline()
-            if READY_PATTERN.match(line.decode(ENCODING)):
+            if READY_PATTERN.search(line.decode(ENCODING)):
                 logger.info("Minecraft server online")
                 self.status = Status.running
                 return
@@ -83,6 +83,30 @@ class Server:
         logger.info("Minecraft server offline")
         self.status = Status.stopped
 
+    async def is_valid_connection(self, client_reader):
+        """Check the packet to see if the client is valid
+            See https://wiki.vg/Server_List_Ping
+            Only compatable with 1.7 and later"""
+
+        payload = bytes()
+        try:
+            num_bytes = await asyncio.wait_for(client_reader.read(1), timeout=5)
+
+            # Number of bytes doesn't include the byte count itself
+            # Assume that the client will send us less than 128 bytes
+            num_bytes = int.from_bytes(num_bytes, byteorder="big")
+
+            payload = await asyncio.wait_for(client_reader.read(num_bytes), timeout=5)
+        except asyncio.TimeoutError:
+            return False
+
+        # Check if packet type is ping
+        if payload[0] != 0x00:
+            return False
+
+        # The last byte should be status enum
+        return payload[-1] == 0x01
+
     def fake_status(self) -> bytes:
         """Return the JSON data with the starting up message"""
 
@@ -90,7 +114,9 @@ class Server:
 
     @staticmethod
     def _compile_fake_status_bytes() -> bytes:
-        """Build the JSON data to send to a client to show it's starting up"""
+        """Build the JSON data to send to a client to show it's starting up
+            See https://wiki.vg/Server_List_Ping
+            Only compatable with 1.7 and later"""
 
         json_data = json.dumps(
             {
@@ -103,7 +129,8 @@ class Server:
 
         data = bytearray()
         # Total packet length
-        # Seems to not work if above 0x80
+        # Does not work if above 0x7f, the last bit is used for showing if
+        # there are following bytes
         data.extend((len(json_data) + 2).to_bytes(1, byteorder="big"))
         # Ping enum
         data.extend(b"\x00")

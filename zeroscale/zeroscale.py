@@ -17,12 +17,14 @@ class ZeroScale:
         server_port: int,
         server_idle_shutdown: int = 15,
         server_shutdown_timeout: int = 15,
+        ignore_bad_clients: bool = False,
     ):
         self.server = server
         self.listen_port = listen_port
         self.server_port = server_port
         self.server_idle_shutdown = server_idle_shutdown
         self.server_shutdown_timeout = server_shutdown_timeout
+        self.ignore_bad_clients = ignore_bad_clients
 
         self.live_connections = 0
         self.kill_task = None
@@ -47,11 +49,14 @@ class ZeroScale:
             logger.debug("Lost connection, total clients: %i", self.live_connections)
             if self.live_connections <= 0:
                 self.schedule_stop()
-        else:
+        elif self.ignore_bad_clients or await self.server.is_valid_connection(client_reader):
             await self.send_server_status(client_writer)
             await self.server.start()
             # In case no one connects after starting
             self.schedule_stop()
+        else:
+            logger.debug("Invalid client attempted connection")
+            client_writer.close()
 
     async def send_server_status(self, client_writer):
         """Send a data packet to a client that the server is starting up"""
