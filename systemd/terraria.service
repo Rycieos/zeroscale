@@ -8,7 +8,7 @@ User=terraria
 Group=terraria
 UMask=007
 ExecStart=/opt/terraria/venv/bin/zeroscale terraria 7777 7778
-KillSignal=SIGKILL
+KillSignal=SIGINT
 Restart=on-failure
 # Configures the time to wait before service is stopped forcefully.
 TimeoutStopSec=30

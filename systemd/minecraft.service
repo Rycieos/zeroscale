@@ -7,9 +7,8 @@ Type=simple
 User=minecraft
 Group=minecraft
 UMask=007
-PIDFile=/opt/minecraft/server.pid
 ExecStart=/opt/minecraft/venv/bin/zeroscale minecraft 25565 25575
-KillSignal=SIGKILL
+KillSignal=SIGINT
 Restart=on-failure
 # Configures the time to wait before service is stopped forcefully.
 TimeoutStopSec=30
