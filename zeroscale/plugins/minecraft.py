@@ -88,20 +88,16 @@ class Server:
             See https://wiki.vg/Server_List_Ping
             Only compatable with 1.7 and later"""
 
-        payload = bytes()
-        try:
-            num_bytes = await asyncio.wait_for(client_reader.read(1), timeout=5)
+        num_bytes = await asyncio.wait_for(client_reader.read(1), timeout=5)
 
-            # Number of bytes doesn't include the byte count itself
-            # Assume that the client will send us less than 128 bytes
-            num_bytes = int.from_bytes(num_bytes, byteorder="big")
+        # Number of bytes doesn't include the byte count itself
+        # Assume that the client will send us less than 128 bytes
+        num_bytes = min(int.from_bytes(num_bytes, byteorder="big"), 127)
 
-            payload = await asyncio.wait_for(client_reader.read(num_bytes), timeout=5)
-        except asyncio.TimeoutError:
-            return False
+        payload = await asyncio.wait_for(client_reader.read(num_bytes), timeout=5)
 
         # Check if packet type is ping
-        if payload[0] != 0x00:
+        if len(payload) == 0 or payload[0] != 0x00:
             return False
 
         # The last byte should be status enum

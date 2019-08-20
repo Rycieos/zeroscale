@@ -89,19 +89,15 @@ class Server:
         """Check the packet to see if the client is valid
             See https://seancode.com/terrafirma/net.html"""
 
-        payload = bytes()
-        try:
-            num_bytes = await asyncio.wait_for(client_reader.read(2), timeout=5)
+        num_bytes = await asyncio.wait_for(client_reader.read(2), timeout=5)
 
-            # Number of bytes includes the byte count itself
-            num_bytes = int.from_bytes(num_bytes, byteorder="little") - 2
+        # Number of bytes includes the byte count itself
+        num_bytes = int.from_bytes(num_bytes, byteorder="little") - 2
 
-            payload = await asyncio.wait_for(client_reader.read(num_bytes), timeout=5)
-        except asyncio.TimeoutError:
-            return False
+        payload = await asyncio.wait_for(client_reader.read(num_bytes), timeout=5)
 
         # Check if packet type is connect request
-        if payload[0] != 0x01:
+        if len(payload) == 0 or payload[0] != 0x01:
             return False
 
         # The word "Terraria" should be in the payload

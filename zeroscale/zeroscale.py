@@ -43,22 +43,28 @@ class ZeroScale:
             try:
                 await proxy(client_reader, client_writer, self.server_port)
             except (ConnectionError, TimeoutError, asyncio.TimeoutError):
-                logger.exception("Proxy connection error")
+                logger.debug("Proxy connection error", exc_info=True)
+            finally:
+                self.live_connections -= 1
+                logger.debug("Lost connection, total clients: %i", self.live_connections)
+                if self.live_connections <= 0:
+                    self.schedule_stop()
 
-            self.live_connections -= 1
-            logger.debug("Lost connection, total clients: %i", self.live_connections)
-            if self.live_connections <= 0:
-                self.schedule_stop()
-        elif self.ignore_bad_clients or await self.server.is_valid_connection(client_reader):
-            await self.send_server_status(client_writer)
-            await self.server.start()
-            # In case no one connects after starting
-            self.schedule_stop()
         else:
-            logger.debug("Invalid client attempted connection")
-            client_writer.close()
+            try:
+                if self.ignore_bad_clients or await self.server.is_valid_connection(client_reader):
+                    self.send_server_status(client_writer)
+                    await self.server.start()
+                    # In case no one connects after starting
+                    self.schedule_stop()
+                else:
+                    logger.debug("Invalid client attempted connection")
+            except (ConnectionError, TimeoutError, asyncio.TimeoutError):
+                logger.debug("Invalid client; connection error")
+            finally:
+                client_writer.close()
 
-    async def send_server_status(self, client_writer):
+    def send_server_status(self, client_writer):
         """Send a data packet to a client that the server is starting up"""
 
         logger.debug("Sending fake response")
