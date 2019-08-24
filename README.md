@@ -122,3 +122,9 @@ class Server():
 
 ## Systemd
 Example systemd configs are located in systemd/ to accompany the plugins.
+
+## Known issues
+* Plugins that use subprocess pipes to read stdin, stdout, or stderr don't work
+  on Cygwin, as the OS is seen as posix and thus doesn't ship with the
+  ProactorEventLoop, but since the backend OS is Windows, the default event
+  loop won't work. This is a bug in the Cygwin Python package.

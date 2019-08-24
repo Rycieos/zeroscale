@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import sys
 
 from zeroscale.proxy import proxy
 from zeroscale.status import Status
@@ -103,6 +104,11 @@ class ZeroScale:
         """Start the proxy server"""
 
         loop = asyncio.get_event_loop()
+
+        if sys.platform == 'win32':
+            # See https://docs.python.org/3/library/asyncio-platforms.html#subprocess-support-on-windows
+            loop = asyncio.ProactorEventLoop()
+
         coro = asyncio.start_server(self.handle_client, port=self.listen_port)
         proxy_server = loop.run_until_complete(coro)
 
