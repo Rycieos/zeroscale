@@ -7,7 +7,7 @@ from zeroscale.status import Status
 
 ENCODING = "utf-8"
 READY_PATTERN = re.compile(
-    "\\[Server thread/INFO\\]: Done \\([0-9.]*s\\)", re.IGNORECASE
+    "\\[Server thread/INFO\\].*: Done \\([0-9.]*s\\)", re.IGNORECASE
 )
 
 logger = logging.getLogger(__name__)
