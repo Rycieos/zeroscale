@@ -16,6 +16,7 @@ class ZeroScale:
         server,
         listen_port: int,
         server_port: int,
+        server_host: str = None,
         server_idle_shutdown: int = 15,
         server_shutdown_timeout: int = 15,
         ignore_bad_clients: bool = False,
@@ -23,6 +24,7 @@ class ZeroScale:
         self.server = server
         self.listen_port = listen_port
         self.server_port = server_port
+        self.server_host = server_host
         self.server_idle_shutdown = server_idle_shutdown
         self.server_shutdown_timeout = server_shutdown_timeout
         self.ignore_bad_clients = ignore_bad_clients
@@ -42,7 +44,8 @@ class ZeroScale:
                 self.cancel_stop()
 
             try:
-                await proxy(client_reader, client_writer, self.server_port)
+                await proxy(client_reader, client_writer,
+                        self.server_host, self.server_port)
             except (ConnectionError, TimeoutError, asyncio.TimeoutError):
                 logger.debug("Proxy connection error", exc_info=True)
             finally:

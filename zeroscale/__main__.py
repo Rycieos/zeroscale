@@ -30,6 +30,12 @@ def main(*argv):
         help="Port that the real server will be listening on.",
     )
     parser.add_argument(
+        "--server_host",
+        "-H",
+        type=str,
+        help="Hostname that the real server will be listening on. Defaults to localhost.",
+    )
+    parser.add_argument(
         "--idle_shutdown",
         "-t",
         type=int,
@@ -117,6 +123,7 @@ def main(*argv):
     ZeroScale(
         server=server,
         listen_port=args.listen_port,
+        server_host=args.server_host,
         server_port=args.server_port,
         server_idle_shutdown=args.idle_shutdown,
         server_shutdown_timeout=args.shutdown_timeout,

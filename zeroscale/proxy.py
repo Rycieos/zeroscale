@@ -10,10 +10,10 @@ async def pipe(reader, writer):
         writer.close()
 
 
-async def proxy(client_reader, client_writer, server_port):
+async def proxy(client_reader, client_writer, server_host, server_port):
     try:
         remote_reader, remote_writer = await asyncio.wait_for(
-            asyncio.open_connection(port=server_port), timeout=20
+            asyncio.open_connection(host=server_host, port=server_port), timeout=20
         )
         await asyncio.gather(
             pipe(client_reader, remote_writer),
