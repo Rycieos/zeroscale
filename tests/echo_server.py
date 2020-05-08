@@ -22,6 +22,8 @@ def main(args):
     loop.run_until_complete(asyncio.start_server(handle_connection, port=port))
     try:
         loop.run_forever()
+    except KeyboardInterrupt:
+        pass
     finally:
         loop.close()
 

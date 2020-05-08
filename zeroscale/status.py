@@ -9,6 +9,7 @@ class Status(Enum):
     starting = 2
     running = 3
     stopping = 4
+    paused = 5
 
     # Hide unimportant value
     def __repr__(self):

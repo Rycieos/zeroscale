@@ -1,13 +1,23 @@
+#!/usr/bin/env python
+
 import argparse
 import logging
 import signal
 import sys
 from importlib import import_module
 
-from zeroscale.zeroscale import ZeroScale
+from .parser import add_common_options
+from .zeroscale import ZeroScale
 
 logger = logging.getLogger(__name__)
 
+
+def parse_signal(signal):
+    try:
+        return signal.Signals(signal)
+    except ValueError:
+        logger.error("Signal '%i' is not a valid signal number", signal)
+        raise
 
 def main(*argv):
     """Load arguments and start a Zeroscale proxy server"""
@@ -30,67 +40,31 @@ def main(*argv):
         help="Port that the real server will be listening on.",
     )
     parser.add_argument(
-        "--server_host",
-        "-H",
-        type=str,
-        help="Hostname that the real server will be listening on. Defaults to localhost.",
-    )
-    parser.add_argument(
-        "--idle_shutdown",
-        "-t",
-        type=int,
-        default=15,
-        help="Time in seconds after last client disconects to shutdown the server. Default 15.",
-    )
-    parser.add_argument(
-        "--shutdown_timeout",
-        "-s",
-        type=int,
-        default=15,
-        help="Time in seconds after proxy server gets SIGINT to kill the server. Default 15.",
-    )
-    parser.add_argument(
         "--working_directory",
         "-w",
         type=str,
         help="Directory to start the server process.",
     )
     parser.add_argument(
+        "--pause_signal",
+        type=int,
+        help="Signal to send to the server process to pause it. In int form. Default 20 (SIGTSTP)",
+    )
+    parser.add_argument(
+        "--unpause_signal",
+        type=int,
+        help="Signal to send to the server process to unpause it. In int form. Default 18 (SIGCONT)",
+    )
+    parser.add_argument(
         "--stop_signal",
         type=int,
-        help="Signal to send to the server process to stop it. In int form.",
+        help="""Signal to send to the server process to stop it. In int form.
+                Default 2 (SIGINT).
+                Note that some plugins will use stdin to stop their process, in
+                which case this flag will be ignored.""",
     )
-    parser.add_argument(
-        "--plugin_argument",
-        "-a",
-        type=str,
-        action="append",
-        default=[],
-        help="Arguments to pass to the Server() constructor in the plugin. Can be called multiple times.",
-    )
-    parser.add_argument(
-        "--ignore_bad_clients",
-        "-b",
-        action="store_true",
-        help="Disable checking for a bad client connection. This would prevent port scanners from starting servers, but if your real clients are failing the check, you can disable it.",
-    )
-    parser.add_argument(
-        "--info",
-        "-i",
-        action="store_const",
-        dest="log_level",
-        const=logging.INFO,
-        help="Enable info logging.",
-    )
-    parser.add_argument(
-        "--debug",
-        "-d",
-        action="store_const",
-        dest="log_level",
-        const=logging.DEBUG,
-        default=logging.WARNING,
-        help="Enable debug logging. Default is WARNING",
-    )
+
+    add_common_options(parser)
 
     args = parser.parse_args(*argv)
 
@@ -100,36 +74,29 @@ def main(*argv):
         plugin = import_module("." + args.server_plugin, package="zeroscale.plugins")
     except (ModuleNotFoundError, ImportError):
         logger.exception("Could not load plugin '%s'", args.server_plugin)
-        return 1
+        raise
 
-    server = plugin.Server(
-        *args.plugin_argument, working_directory=args.working_directory
-    )
+    server = plugin.Server(*args.plugin_argument)
 
+    if args.working_directory:
+        server.set_working_directory(args.working_directory)
+    if args.pause_signal:
+        server.set_pause_signal(parse_signal(args.pause_signal))
+    if args.unpause_signal:
+        server.set_unpause_signal(parse_signal(args.unpause_signal))
     if args.stop_signal:
-        stop_signal = None
-        try:
-            stop_signal = signal.Signals(args.stop_signal)
-        except ValueError:
-            logger.error("Signal must be a valid signal number")
-            return 1
-
-        try:
-            server.set_stop_signal(stop_signal)
-        except AttributeError:
-            logger.error("Server plugin does not support custom stop signals")
-            return 1
+        server.set_stop_signal(parse_signal(args.stop_signal))
 
     ZeroScale(
         server=server,
         listen_port=args.listen_port,
         server_host=args.server_host,
         server_port=args.server_port,
+        method_pause=not args.method_stop,
         server_idle_shutdown=args.idle_shutdown,
         server_shutdown_timeout=args.shutdown_timeout,
         ignore_bad_clients=args.ignore_bad_clients
     ).start_server()
 
-
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main(sys.argv[1:]))

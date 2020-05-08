@@ -4,6 +4,7 @@ import logging
 import re
 
 from zeroscale.status import Status
+from .generic import Server as GenericServer
 
 ENCODING = "utf-8"
 READY_PATTERN = re.compile(
@@ -13,21 +14,20 @@ READY_PATTERN = re.compile(
 logger = logging.getLogger(__name__)
 
 
-class Server:
+class Server(GenericServer):
     """Minecraft server wrapper"""
-    def __init__(self, *server_args, working_directory: str = None):
+    def __init__(self, *server_args):
+        super().__init__(server_args)
 
         if not server_args:
             self.server_command = ("java", "-jar", "server.jar", "nogui")
         else:
             self.server_command = server_args
 
-        self.working_directory = working_directory
+        self.name = "Minecraft"
 
         self.fake_status_bytes = self._compile_fake_status_bytes()
-        self.proc = None
         self.startup_task = None
-        self.status = Status.stopped
 
     async def start(self):
         """Start the Minecraft server"""
