@@ -11,10 +11,13 @@ test_deps = [
     "pytest-asyncio>=0.10.0",
     "pytest-cov>=2.6.1",
 ]
+docker_deps = [
+    "docker>=4.0,<5.0",
+]
 
 setup(
     name="zeroscale",
-    version="0.4.2",
+    version="0.5.0",
     author="Mark Vander Stel",
     author_email="mvndrstl@gmail.com",
     description="Scale-to-zero any server",
@@ -24,12 +27,16 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     tests_require=test_deps,
-    extras_require={"test": test_deps},
+    extras_require={
+        "test": test_deps,
+        "docker": docker_deps,
+    },
     zip_safe=False,
     python_requires=">=3.5",
     entry_points={
         "console_scripts": [
-            "zeroscale = zeroscale.__main__:main"
+            "zeroscale = zeroscale.__main__:main",
+            "docker-zeroscale = zeroscale.__docker__:main",
         ]
     },
     classifiers=[

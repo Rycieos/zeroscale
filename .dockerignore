@@ -1,0 +1,5 @@
+*
+!setup.py
+!README.md
+!zeroscale/*.py
+!zeroscale/plugins/*.py
