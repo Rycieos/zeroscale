@@ -6,10 +6,10 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 test_deps = [
-    "coveralls>=1.4.0",
-    "pytest>=5.0.0",
-    "pytest-asyncio>=0.10.0",
-    "pytest-cov>=2.6.1",
+    "coveralls>=2.0,<3.0",
+    "pytest>=5.4,<6.0",
+    "pytest-asyncio>=0.12.0,<0.13.0",
+    "pytest-cov>=2.6.1,<3.0",
 ]
 docker_deps = [
     "docker>=4.0,<5.0",
@@ -47,5 +47,6 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
 )
