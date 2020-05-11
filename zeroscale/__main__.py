@@ -23,22 +23,8 @@ def main(*argv):
     """Load arguments and start a Zeroscale proxy server"""
 
     parser = argparse.ArgumentParser(description="Scale a server to zero.")
+    add_common_options(parser)
 
-    parser.add_argument(
-        "server_plugin",
-        type=str,
-        help="Package name of the server plugin. Must be in plugins dir.",
-    )
-    parser.add_argument(
-        "listen_port",
-        type=int,
-        help="Port for the proxy server, where clients will connect.",
-    )
-    parser.add_argument(
-        "server_port",
-        type=int,
-        help="Port that the real server will be listening on.",
-    )
     parser.add_argument(
         "--working_directory",
         "-w",
@@ -64,16 +50,14 @@ def main(*argv):
                 which case this flag will be ignored.""",
     )
 
-    add_common_options(parser)
-
     args = parser.parse_args(*argv)
 
     logging.basicConfig(level=args.log_level)
 
     try:
-        plugin = import_module("." + args.server_plugin, package="zeroscale.plugins")
+        plugin = import_module("." + args.plugin, package="zeroscale.plugins")
     except (ModuleNotFoundError, ImportError):
-        logger.exception("Could not load plugin '%s'", args.server_plugin)
+        logger.exception("Could not load plugin '%s'", args.plugin)
         raise
 
     server = plugin.Server(*args.plugin_argument)
@@ -91,7 +75,7 @@ def main(*argv):
         server=server,
         listen_port=args.listen_port,
         server_host=args.server_host,
-        server_port=args.server_port,
+        server_port=args.server_port or args.listen_port,
         method_pause=not args.method_stop,
         server_idle_shutdown=args.idle_shutdown,
         server_shutdown_timeout=args.shutdown_timeout,

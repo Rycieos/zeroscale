@@ -8,3 +8,4 @@ RUN pip install .[docker] && \
     rm -rf /root/.cache
 
 ENTRYPOINT ["docker-zeroscale"]
+CMD ["--help"]

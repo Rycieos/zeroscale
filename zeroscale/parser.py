@@ -5,10 +5,29 @@ logger = logging.getLogger(__name__)
 
 def add_common_options(parser):
     parser.add_argument(
+        "--listen_port",
+        "-p",
+        type=int,
+        default=8080,
+        help="Port for the proxy server, where clients will connect. Defaults to 8080",
+    )
+    parser.add_argument(
         "--server_host",
         "-H",
         type=str,
         help="Hostname that the real server will be listening on. Defaults to localhost.",
+    )
+    parser.add_argument(
+        "--server_port",
+        "-P",
+        type=int,
+        help="Port that the real server will be listening on. Defaults to the value of listen_port",
+    )
+    parser.add_argument(
+        "--plugin",
+        type=str,
+        default="generic",
+        help="Package name of the server plugin. Must be in plugins dir. Defaults to the generic provider.",
     )
     parser.add_argument(
         "--method_stop",
@@ -45,7 +64,8 @@ def add_common_options(parser):
         help="""Disable checking for a bad client connection.
                 This would prevent port scanners from starting servers, but if
                 your real clients are failing the check, you can disable it.
-                This is implemented by each server plugin.""",
+                This is implemented by each server plugin. The default plugin
+                has no check.""",
     )
     parser.add_argument(
         "--info",
