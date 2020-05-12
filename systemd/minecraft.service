@@ -7,7 +7,7 @@ Type=simple
 User=minecraft
 Group=minecraft
 UMask=007
-ExecStart=/opt/minecraft/venv/bin/zeroscale minecraft 25565 25575
+ExecStart=/opt/minecraft/venv/bin/zeroscale --plugin=minecraft --listen_port=25565 --server_port=25575
 KillSignal=SIGINT
 Restart=on-failure
 # Configures the time to wait before service is stopped forcefully.

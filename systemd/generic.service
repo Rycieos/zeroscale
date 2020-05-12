@@ -1,13 +1,13 @@
 [Unit]
-Description=Scaling Terraria Server
+Description=Scaling Generic Server
 After=network-online.target
 
 [Service]
 Type=simple
-User=terraria
-Group=terraria
+User=root
+Group=root
 UMask=007
-ExecStart=/opt/terraria/venv/bin/zeroscale --plugin=terraria --listen_port=7777 --server_port=7778
+ExecStart=/opt/zeroscale/venv/bin/zeroscale --listen_port=8080 --server_port=9000
 KillSignal=SIGINT
 Restart=on-failure
 # Configures the time to wait before service is stopped forcefully.
