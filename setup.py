@@ -17,7 +17,7 @@ docker_deps = [
 
 setup(
     name="zeroscale",
-    version="0.5.0",
+    version="0.5.1",
     author="Mark Vander Stel",
     author_email="mvndrstl@gmail.com",
     description="Scale-to-zero any server",

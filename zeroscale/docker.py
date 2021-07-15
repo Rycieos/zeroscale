@@ -93,7 +93,11 @@ class DockerProxyServer(BaseServer):
         logger.info("Pausing container")
         self.status = Status.paused
         container = self.get_container()
-        container.pause()
+
+        try:
+            container.pause()
+        except docker.errors.APIError:
+            logger.warn("Container failed to pause")
 
     async def unpause(self):
         """Unpause the Docker container"""
@@ -104,7 +108,11 @@ class DockerProxyServer(BaseServer):
         logger.info("Unpausing container")
         self.status = Status.running
         container = self.get_container()
-        container.unpause()
+
+        try:
+            container.unpause()
+        except docker.errors.APIError:
+            logger.warn("Container failed to unpause")
 
     def close(self):
         self.docker_client.close()
