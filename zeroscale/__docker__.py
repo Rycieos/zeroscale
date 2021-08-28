@@ -32,7 +32,9 @@ def main(*argv):
 
     args = parser.parse_args(*argv)
 
-    logging.basicConfig(level=args.log_level)
+    logging.basicConfig(
+            level=args.log_level,
+            format='%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 
     wrapped_server = None
     if args.plugin:
