@@ -125,6 +125,6 @@ class DockerProxyServer(BaseServer):
 
     def fake_status(self) -> bytes:
         if self.wrapped_class:
-            return self.wrapped_class.fake_status(client_reader)
+            return self.wrapped_class.fake_status()
         else:
-            return super().wrapped_class.fake_status(client_reader)
+            return super().wrapped_class.fake_status()
