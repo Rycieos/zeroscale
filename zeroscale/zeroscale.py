@@ -39,7 +39,9 @@ class ZeroScale:
 
         self.cancel_stop()
         self.live_connections += 1
-        logger.debug("New connection, total clients: %i", self.live_connections)
+        logger.debug("Accepted connection: %s, total clients: %i",
+                client_writer.get_extra_info('peername'),
+                self.live_connections)
 
         try:
             await proxy(client_reader, client_writer,
@@ -48,14 +50,16 @@ class ZeroScale:
             logger.debug("Proxy connection error", exc_info=True)
         finally:
             self.live_connections -= 1
-            logger.debug("Lost connection, total clients: %i", self.live_connections)
+            logger.debug("Lost connection: %s, total clients: %i",
+                    client_writer.get_extra_info('peername'),
+                    self.live_connections)
             if self.live_connections <= 0:
                 self.schedule_stop()
 
     async def handle_unready(self, client_reader, client_writer):
         try:
             if self.ignore_bad_clients or await self.server.is_valid_connection(client_reader):
-                logger.debug("Sending fake response")
+                logger.debug("Sending fake response to %s", client_writer.get_extra_info('peername'))
                 client_writer.write(self.server.fake_status())
                 client_writer.close()
                 await self.start_then_schedule_stop()
@@ -90,7 +94,9 @@ class ZeroScale:
     async def handle_client(self, client_reader, client_writer):
         """Handle an incoming client connection, depending on our manage method"""
 
-        logger.debug("New connection, server is %s", self.server.status.name)
+        logger.debug("New connection: %s, server is %s",
+                client_writer.get_extra_info('peername'),
+                self.server.status.name)
 
         if self.method_pause:
             await self.handle_client_pausing(client_reader, client_writer)
