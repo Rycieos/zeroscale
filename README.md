@@ -1,13 +1,9 @@
 # zeroscale
 
-[![Build Status](https://travis-ci.org/Rycieos/zeroscale.svg?branch=master)](https://travis-ci.org/Rycieos/zeroscale)
-[![Coverage Status](https://coveralls.io/repos/github/Rycieos/zeroscale/badge.svg?branch=master)](https://coveralls.io/github/Rycieos/zeroscale?branch=master)
-[![Requirements Status](https://requires.io/github/Rycieos/zeroscale/requirements.svg?branch=master)](https://requires.io/github/Rycieos/zeroscale/requirements/?branch=master)
-
-[![Docker Image Version](https://img.shields.io/docker/v/rycieos/zeroscale?sort=semver)
- ![Docker Pulls](https://img.shields.io/docker/pulls/rycieos/zeroscale)](https://hub.docker.com/repository/docker/rycieos/zeroscale)
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/rycieos/zeroscale)](https://hub.docker.com/repository/docker/rycieos/zeroscale/builds)
-[![Docker Image Size](https://img.shields.io/docker/image-size/rycieos/zeroscale?sort=semver)](https://hub.docker.com/repository/docker/rycieos/zeroscale/tags)
+[![Build Status](https://img.shields.io/github/workflow/status/Rycieos/zeroscale/build-ghcr-image/main)](https://github.com/Rycieos/zeroscale/actions/workflows/build-ghcr-image.yml)
+[![Tests Status](https://img.shields.io/github/workflow/status/Rycieos/zeroscale/tests/main)](https://github.com/Rycieos/zeroscale/actions/workflows/tests.yml)
+[![Coverage Status](https://coveralls.io/repos/github/Rycieos/zeroscale/badge.svg?branch=main)](https://coveralls.io/github/Rycieos/zeroscale?branch=main)
+[![Dependencies Status](https://img.shields.io/librariesio/release/pypi/zeroscale)](https://libraries.io/pypi/zeroscale)
 
 [![PyPI Package latest release](https://img.shields.io/pypi/v/zeroscale.svg)
  ![PyPI Wheel](https://img.shields.io/pypi/wheel/zeroscale.svg)
