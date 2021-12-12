@@ -22,4 +22,9 @@ jobs:
           pip install .[test]
       - name: Test with pytest
         run: |
-          pytest --cov-report= --cov=zeroscale tests/
+          coverage run --source=zeroscale -m pytest tests/
+          coverage xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true

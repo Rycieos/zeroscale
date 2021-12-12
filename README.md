@@ -1,8 +1,8 @@
 # zeroscale
 
 [![Build Status](https://img.shields.io/github/workflow/status/Rycieos/zeroscale/build-ghcr-image/main)](https://github.com/Rycieos/zeroscale/actions/workflows/build-ghcr-image.yml)
-[![Tests Status](https://img.shields.io/github/workflow/status/Rycieos/zeroscale/tests/main)](https://github.com/Rycieos/zeroscale/actions/workflows/tests.yml)
-[![Coverage Status](https://coveralls.io/repos/github/Rycieos/zeroscale/badge.svg?branch=main)](https://coveralls.io/github/Rycieos/zeroscale?branch=main)
+[![Tests Status](https://img.shields.io/github/workflow/status/Rycieos/zeroscale/tests/main?label=tests)](https://github.com/Rycieos/zeroscale/actions/workflows/tests.yml)
+[![Coverage Status](https://codecov.io/gh/Rycieos/zeroscale/branch/main/graph/badge.svg?token=KQZDCZ2D60)](https://codecov.io/gh/Rycieos/zeroscale)
 [![Dependencies Status](https://img.shields.io/librariesio/release/pypi/zeroscale)](https://libraries.io/pypi/zeroscale)
 
 [![PyPI Package latest release](https://img.shields.io/pypi/v/zeroscale.svg)

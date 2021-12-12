@@ -6,10 +6,9 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 test_deps = [
-    "coveralls>=3.0,<4.0",
-    "pytest>=5.2,<7.0",
+    "coverage>=6.2,<7.0",
+    "pytest>=6.2,<7.0",
     "pytest-asyncio>=0.16.0,<0.17.0",
-    "pytest-cov>=3.0,<4.0",
 ]
 docker_deps = [
     "docker>=5.0,<6.0",
