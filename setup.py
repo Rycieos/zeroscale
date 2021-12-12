@@ -6,13 +6,13 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 test_deps = [
-    "coveralls>=2.0,<3.0",
-    "pytest>=5.4,<6.0",
-    "pytest-asyncio>=0.12.0,<0.13.0",
-    "pytest-cov>=2.6.1,<3.0",
+    "coveralls>=3.0,<4.0",
+    "pytest>=5.2,<7.0",
+    "pytest-asyncio>=0.16.0,<0.17.0",
+    "pytest-cov>=3.0,<4.0",
 ]
 docker_deps = [
-    "docker>=4.0,<5.0",
+    "docker>=5.0,<6.0",
 ]
 
 setup(
@@ -44,10 +44,10 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
 )
